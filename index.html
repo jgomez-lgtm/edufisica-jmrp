@@ -199,7 +199,7 @@ h1.big{font-family:var(--serif);font-weight:800;font-size:27px;margin-bottom:4px
       <label class="check"><input type="checkbox" id="fAuth"><span>Autorizo el tratamiento de mis datos personales para fines académicos institucionales, conforme a la Ley 1581 de 2012.</span></label>
       <div style="display:flex;gap:12px">
         <button class="btn-ghost" onclick="go('select')">Volver</button>
-        <button class="btn btn-primary" style="flex:1" id="toInstr" disabled onclick="go('instructions')">Continuar</button>
+        <button class="btn btn-primary" style="flex:1" id="toInstr" disabled onclick="fillInstructions();go('instructions')">Continuar</button>
       </div>
     </div>
   </div>
