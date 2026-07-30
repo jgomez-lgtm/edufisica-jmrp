@@ -369,6 +369,24 @@ function buildSequence(){
   return out;
 }
 function startExam(){
+  if(CONFIG.ENDPOINT){
+    checkEligibility(function(presentado){
+      if(presentado){ showModal("Ya presentaste esta evaluación","Con el documento <b>"+student.documento+"</b> ya registraste un intento de esta evaluación. No puedes repetirla.","Entendido",function(){go("home")}); }
+      else beginExam();
+    });
+  } else beginExam();
+}
+function checkEligibility(cb){
+  var name="__cb"+Date.now(), s, done=false;
+  var to=setTimeout(function(){ cleanup(); cb(false); }, 6000); // si no responde, se permite continuar
+  function cleanup(){ if(done)return; done=true; try{delete window[name];}catch(e){window[name]=undefined;} if(s&&s.parentNode)s.parentNode.removeChild(s); clearTimeout(to); }
+  window[name]=function(j){ cleanup(); cb(!!(j&&j.presentado)); };
+  s=document.createElement("script");
+  s.src=CONFIG.ENDPOINT+(CONFIG.ENDPOINT.indexOf("?")>=0?"&":"?")+"check=1&callback="+name+"&documento="+encodeURIComponent(student.documento)+"&examId="+encodeURIComponent(exam.id);
+  s.onerror=function(){ cleanup(); cb(false); };
+  document.body.appendChild(s);
+}
+function beginExam(){
   seq=buildSequence();
   answers=new Array(seq.length).fill(null); idx=0;
   secondsLeft=exam.timeLimitMin*60; submitted=false;
@@ -465,9 +483,10 @@ function showResults(g,correct,total,used,comp,auto){
 function sendResult(p){
   var note=$("#sendNote");
   if(CONFIG.ENDPOINT){
+    note.innerHTML='<span style="color:var(--muted)">Enviando respuestas…</span>';
     fetch(CONFIG.ENDPOINT,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(p)})
-      .then(function(){note.innerHTML='<span style="color:var(--green-d)">✓ Respuestas enviadas a la institución.</span>'})
-      .catch(function(){note.innerHTML='<span style="color:var(--bad)">No se pudo enviar automáticamente. Descarga el comprobante y entrégalo a tu docente.</span>'});
+      .then(function(){ note.innerHTML='<span style="color:var(--green-d)">✓ Respuestas enviadas a la institución.</span>'; })
+      .catch(function(){ note.innerHTML='<span style="color:var(--bad)">No se pudo enviar. Descarga tu comprobante y entrégalo a tu docente.</span>'; });
   } else { note.innerHTML='<span style="color:var(--muted)">Descarga tu comprobante y entrégalo a tu docente.</span>'; }
 }
 function csvCell(v){v=String(v==null?"":v);return '"'+v.replace(/"/g,'""')+'"'}
