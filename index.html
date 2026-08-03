@@ -501,6 +501,7 @@ $("#dlBtn").addEventListener("click",function(){ if(!lastResult)return; var p=la
 });
 window.addEventListener("beforeunload",function(e){ if(startedAt&&!submitted){e.preventDefault();e.returnValue=""} });
 
+EXAMS.forEach(function(e){e.periodo="Periodo 2";var s=0;e.preguntas.forEach(function(q){var c=(q.competencia||"").split("/")[0].trim();s+=(c=="Literal"||c=="Lexical")?45:(c=="Inferencial")?70:90;});var w=0;e.textos.forEach(function(t){w+=(t.cuerpo||"").split(/\s+/).filter(Boolean).length;});e.timeLimitMin=Math.max(20,Math.ceil((s+w/150*60)*1.10/60/5)*5);});
 initSelect(); initIdentify();
 </script>
 </body>
