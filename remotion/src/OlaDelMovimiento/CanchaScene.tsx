@@ -24,13 +24,20 @@ export const CanchaScene: React.FC<{ frame: number }> = ({ frame }) => {
   );
 
   return (
-    <AbsoluteFill
-      style={{
-        transform: `scale(${cameraScale}) translateY(${cameraY}px)`,
-      }}
-    >
+    <AbsoluteFill>
+      {/* El fondo se queda a tamaño completo: si escalamos todo el
+          AbsoluteFill (fondo incluido) aparece un marco negro alrededor
+          al alejar la cámara, porque el fondo es una ilustración de
+          tamaño fijo, no una escena más grande de la que "hay más para
+          mostrar". Solo la multitud se aleja/reduce. */}
       <SchoolYard frame={frame} />
-      <Crowd frame={frame} />
+      <AbsoluteFill
+        style={{
+          transform: `scale(${cameraScale}) translateY(${cameraY}px)`,
+        }}
+      >
+        <Crowd frame={frame} />
+      </AbsoluteFill>
     </AbsoluteFill>
   );
 };
